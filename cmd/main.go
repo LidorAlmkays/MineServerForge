@@ -1,16 +1,20 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/LidorAlmkays/MineServerForge/utils/validators"
+	"github.com/LidorAlmkays/MineServerForge/config"
+	rest "github.com/LidorAlmkays/MineServerForge/internal/api/REST"
+	"github.com/LidorAlmkays/MineServerForge/pkg/configs"
+	"github.com/LidorAlmkays/MineServerForge/pkg/logger"
+	"github.com/LidorAlmkays/MineServerForge/pkg/utils/enums"
+	"github.com/LidorAlmkays/MineServerForge/pkg/utils/validators"
 	"github.com/go-playground/validator"
 )
-
-
 
 type ProgramFlags struct {
 	Mode string `validate:"required,programmode"`
@@ -38,12 +42,21 @@ func main() {
 	os.Exit(0)
 }
 
-
 func setUp() error {
-	// ctx := context.Background()
-	// var err error
+	ctx := context.Background()
+	var err error
+	var cfg *config.Config = &config.Config{}
 
+	cfg, err = configs.GetConfig(cfg, "../config/.env", enums.ENV)
+	if err != nil {
+		return err
+	}
+
+	var l logger.Logger = logger.NewStackedCustomLogger(cfg.ServiceConfig.ProjectName)
+
+	err = rest.NewServer(ctx, cfg, l).ListenAndServe()
+	if err != nil {
+		return err
+	}
 	return nil
 }
-
-

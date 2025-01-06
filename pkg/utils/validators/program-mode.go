@@ -1,7 +1,7 @@
 package validators
 
 import (
-	"github.com/LidorAlmkays/MineServerForge/utils/enums"
+	"github.com/LidorAlmkays/MineServerForge/pkg/utils/enums"
 	"github.com/go-playground/validator"
 )
 

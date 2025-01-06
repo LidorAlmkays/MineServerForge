@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/LidorAlmkays/MineServerForge/config"
-	"github.com/LidorAlmkays/MineServerForge/utils/logger"
+	"github.com/LidorAlmkays/MineServerForge/pkg/logger"
 )
 
 type Handler struct {

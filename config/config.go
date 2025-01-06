@@ -5,5 +5,6 @@ type Config struct {
 }
 
 type ServiceConfig struct {
-	Port int
+	Port        int
+	ProjectName string
 }
