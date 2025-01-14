@@ -8,12 +8,9 @@ import (
 	"github.com/LidorAlmkays/MineServerForge/pkg/utils/enums"
 )
 
-type StructConstraint interface {
-}
-
-func GetConfig[T any](cfg *T, fileFullPath string, fileType enums.ConfigTypes) (*T, error) {
+func GetConfig[T any](fileFullPath string, fileType enums.ConfigTypes) (*T, error) {
 	var err error
-
+	var cfg = new(T)
 	switch fileType {
 	case enums.ENV:
 		{
@@ -31,7 +28,7 @@ func GetConfig[T any](cfg *T, fileFullPath string, fileType enums.ConfigTypes) (
 		}
 	}
 
-	printConfigs(cfg)
+	// printConfigs(cfg)
 
 	return cfg, nil
 }

@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package protobufs;
+
+option go_package = "../pb";
+
+// Enum to specify the type of feature
+enum FeatureType {
+  MODE = 0;   // Represents a mode
+  PLUGIN = 1; // Represents a plugin
+  CONFIG = 2; // Represents a config
+}
+
+// Message for file data
+message FileChunk {
+  bytes data = 1;      // Chunk of file data
+  string filename = 2; // File name
+  string ownerEmail = 3;
+}
+
+// Message for upload requests
+message UploadRequest {
+  FeatureType feature_type = 1; // Type of feature (mode or plugin)
+  FileChunk file_chunk = 2;     // File data
+}
+
+// Message for upload status response
+message UploadStatus {
+  string message = 1;
+  bool success = 2;
+}
+
+// Service definition
+service UploadFeatureData {
+  rpc SaveFeatureData(stream UploadRequest) returns (UploadStatus);
+}

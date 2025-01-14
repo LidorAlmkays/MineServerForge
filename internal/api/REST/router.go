@@ -3,6 +3,9 @@ package rest
 import (
 	"net/http"
 
+	"github.com/LidorAlmkays/MineServerForge/dtos"
+	"github.com/LidorAlmkays/MineServerForge/internal/api/REST/handlers"
+	"github.com/LidorAlmkays/MineServerForge/internal/api/REST/middleware"
 	"github.com/rs/cors"
 )
 
@@ -16,7 +19,7 @@ func (s *Server) addRoutes() http.Handler {
 		AllowedHeaders:   []string{"Authorization", "Content-Type"},
 	})
 
-	// h := handlers.NewHandler(s.cfg, s.ctx, s.l)
-	// s.mux.HandleFunc("POST /user/register", h.RegisterUser)
+	h := handlers.NewHandler(s.cfg, s.ctx, s.l)
+	s.mux.Handle("POST /minecraft/create", middleware.DecodeJSONBody[dtos.CreateMinecraftServerDTO]("dto", http.HandlerFunc(h.RunMinecraftServer)))
 	return c.Handler(s.mux)
 }

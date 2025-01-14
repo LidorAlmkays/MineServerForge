@@ -1,0 +1,10 @@
+Working with grpc, "protoc" is the protobuf compiler base command
+
+To create the protobuf go code from the protobuf file using the compiler, command:
+protoc \
+ --proto_path=./internal/api/GRPC/protobufs \
+ --plugin=protoc-gen-go=$HOME/go/bin/protoc-gen-go \
+  --plugin=protoc-gen-go-grpc=$HOME/go/bin/protoc-gen-go-grpc \
+ --go_out=./internal/api/GRPC/pb \
+ --go-grpc_out=./internal/api/GRPC/pb \
+ ./internal/api/GRPC/protobufs/<NAME>.proto

@@ -10,9 +10,9 @@ import (
 )
 
 type Handler struct {
-	ctx    context.Context
-	l 		logger.Logger
-	cfg 	*config.Config
+	ctx context.Context
+	l   logger.Logger
+	cfg *config.Config
 }
 
 func NewHandler(cfg *config.Config, ctx context.Context, l logger.Logger) *Handler {
