@@ -2,23 +2,24 @@ package serverdatamanager
 
 import (
 	"github.com/LidorAlmkays/MineServerForge/dtos"
-	"github.com/LidorAlmkays/MineServerForge/internal/infrastructure/minecraftservers"
-	"github.com/LidorAlmkays/MineServerForge/internal/models"
+	"github.com/LidorAlmkays/MineServerForge/internal/application"
+	"github.com/LidorAlmkays/MineServerForge/internal/infrastructure"
+	"github.com/LidorAlmkays/MineServerForge/internal/model"
 )
 
-type baseServerDataManager struct {
-	mine minecraftservers.MinecraftServers
+type baseServerConfigDataManager struct {
+	mine infrastructure.MinecraftServerConfigStorage
 }
 
-func NewBaseServerDataManager(mine minecraftservers.MinecraftServers) ServerDataManager {
-	return &baseServerDataManager{mine}
+func NewBaseServerConfigDataManager(mine infrastructure.MinecraftServerConfigStorage) application.ServerConfigDataManager {
+	return &baseServerConfigDataManager{mine}
 }
 
-func (b *baseServerDataManager) CreateServer(createMinecraftDto dtos.CreateMinecraftServerDTO) error {
-	model := models.NewMinecraftServerConfigModel(createMinecraftDto.OwnerEmail, createMinecraftDto.ServerName, createMinecraftDto.AllocatedRamMB, createMinecraftDto.MaxPlayerAmount, createMinecraftDto.ModesNames, createMinecraftDto.PluginsNames)
-	err := b.mine.SaveNewServer(model)
+func (b *baseServerConfigDataManager) CreateServer(createMinecraftDto dtos.CreateMinecraftServerDTO) (int64, error) {
+	model := model.NewMinecraftServerConfigModel(createMinecraftDto.OwnerEmail, createMinecraftDto.ServerName, createMinecraftDto.AllocatedRamMB, createMinecraftDto.MaxPlayerAmount, createMinecraftDto.ModesNames, createMinecraftDto.PluginsNames)
+	id, err := b.mine.SaveNewServer(*model)
 	if err != nil {
-		return err
+		return -1, err
 	}
-	return nil
+	return id, nil
 }

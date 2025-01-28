@@ -2,13 +2,11 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"sync"
 	"syscall"
 
@@ -16,42 +14,29 @@ import (
 	"github.com/LidorAlmkays/MineServerForge/internal/api"
 	grpc "github.com/LidorAlmkays/MineServerForge/internal/api/GRPC"
 	rest "github.com/LidorAlmkays/MineServerForge/internal/api/REST"
+	"github.com/LidorAlmkays/MineServerForge/internal/application"
+	"github.com/LidorAlmkays/MineServerForge/internal/application/serverdatamanager"
 	"github.com/LidorAlmkays/MineServerForge/internal/application/serverfeaturedatamanager"
-	"github.com/LidorAlmkays/MineServerForge/internal/infrastructure/featuresdatamanager"
+	"github.com/LidorAlmkays/MineServerForge/internal/infrastructure/db"
+	"github.com/LidorAlmkays/MineServerForge/internal/infrastructure/filesystem"
 	"github.com/LidorAlmkays/MineServerForge/pkg/logger"
 	"github.com/LidorAlmkays/MineServerForge/pkg/utils/enums"
-	"github.com/LidorAlmkays/MineServerForge/pkg/utils/validators"
-	"github.com/go-playground/validator"
 )
 
-type ProgramFlags struct {
-	Mode enums.ProgramMode `validate:"required,programmode"`
-}
+// @title Swagger Example API
+// @version 1.0
+// @description Sample server for managing game servers
 
-var programFlags ProgramFlags
-
-func init() {
-	validate := validator.New()
-	validate.RegisterValidation("programmode", validators.ProgramModeValidator)
-
-	var mode string
-
-	flag.StringVar(&mode, "Mode", "development", "This flags changes the program mode")
-	flag.Parse()
-
-	mode = strings.ToLower(mode)
-	programFlags.Mode = enums.ProgramMode(mode)
-	err := validate.Struct(programFlags)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Project Mode: " + programFlags.Mode)
-}
-
+// @host localhost:5000
+// @BasePath /
 func main() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
-	errChan, servers := setUp()
+	errChan, servers, err := setUp()
+	if err != nil {
+		fmt.Println("Error accord during project setup: " + err.Error())
+		os.Exit(1)
+	}
 
 	// Wait for either an OS signal or an error from one of the servers
 	select {
@@ -70,21 +55,30 @@ func main() {
 	os.Exit(0)
 }
 
-func setUp() (chan error, []api.BaseServer) {
-	ctx := context.Background()
-
+func setUp() (chan error, []api.BaseServer, error) {
 	var cfg *config.Config = &config.Config{}
 
-	cfg.SetUp("./config/.env", enums.ENV)
-	var l logger.Logger = logger.NewStackedCustomLogger(programFlags.Mode, cfg.ServiceConfig.ProjectName)
+	err := cfg.SetUp("../config/.env", enums.ENV, config.Flags.Mode == enums.DevelopmentMode)
+	if err != nil {
+		return nil, nil, err
+	}
+	ctx := context.Background()
 
-	fdm := featuresdatamanager.NewFileBasedFeatureDataManager()
+	var l logger.Logger = logger.NewStackedCustomLogger(config.Flags.Mode, cfg.ServiceConfig.ProjectName)
 
-	var sFeatures serverfeaturedatamanager.ServerFeaturesDataManager = serverfeaturedatamanager.NewFilesBasedFeatureDataManager(cfg, l, fdm)
+	fdm := filesystem.NewFileBasedFeatureDataStorage()
 
+	var sFeatures application.ServerFeaturesDataManager = serverfeaturedatamanager.NewFilesBasedFeatureDataManager(cfg, l, fdm)
+	dbF := db.GetDBFactory(l)
+	mineDb, err := dbF.GetMinecraftServer(l, enums.Postgres, cfg.DbConfig)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var s application.ServerConfigDataManager = serverdatamanager.NewBaseServerConfigDataManager(mineDb)
 	// Example of dynamically adding more servers (e.g., REST, GRPC)
 	var servers = []api.BaseServer{
-		rest.NewServer(ctx, cfg, l),
+		rest.NewServer(ctx, cfg, l, s),
 		grpc.NewServer(ctx, cfg, l, sFeatures),
 	}
 
@@ -109,5 +103,5 @@ func setUp() (chan error, []api.BaseServer) {
 		close(errCh)
 	}()
 
-	return errCh, servers
+	return errCh, servers, nil
 }

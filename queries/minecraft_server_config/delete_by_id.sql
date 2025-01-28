@@ -1,0 +1,1 @@
+DELETE FROM minecraft_server WHERE id = :id;

@@ -5,6 +5,7 @@ PROTO_DIR = ./internal/api/GRPC/protobufs
 PB_DIR = ./internal/api/GRPC/pb
 DIST_DIR = ./dist
 SRC_DIR = ./cmd
+SWAGGER_OUT_DIR = ./internal/api/docs
 
 # Targets
 .PHONY: all install-tools build clean serve serve-dev serve-prod generate-protos
@@ -53,6 +54,8 @@ clean:
 serve: serve-dev
 
 serve-dev:
+	@echo "Initializing Swagger documentation..."
+	@swag init -g $(SRC_DIR)/main.go -o $(SWAGGER_OUT_DIR)
 	@echo "Starting development server..."
 	@go run $(SRC_DIR)/main.go -Mode development
 

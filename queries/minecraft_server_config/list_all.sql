@@ -1,0 +1,1 @@
+SELECT * FROM minecraft_server;
