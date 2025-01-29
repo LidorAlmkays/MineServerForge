@@ -27,7 +27,7 @@ func (h *Handler) CreateMinecraftServer(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	id, err := h.s.CreateServer(req)
+	id, err := h.s.CreateServer(r.Context(), req)
 	if err != nil {
 		http.Error(w, fmt.Sprintf(`{"error": "%s"}`, err.Error()), http.StatusBadRequest)
 		return

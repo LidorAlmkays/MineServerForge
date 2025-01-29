@@ -1,10 +1,13 @@
 package infrastructure
 
-import "github.com/LidorAlmkays/MineServerForge/internal/model"
+import (
+	"context"
+
+	"github.com/LidorAlmkays/MineServerForge/internal/model/db/minecraftserverconfig"
+)
 
 type MinecraftServerConfigStorage interface {
-	SaveNewServer(model.MinecraftServerConfigModel) (int64, error)
-	UpdateItem(item model.MinecraftServerConfigModel) error
-	Shutdown() error
-	InitRepo() error
+	SaveNewServer(context.Context, minecraftserverconfig.CreateServerConfigParams) (int32, error)
+	UpdateItem(context.Context, minecraftserverconfig.UpdateServerConfigParams) error
+	InitTable() error
 }

@@ -4,7 +4,6 @@ go 1.23.4
 
 require (
 	github.com/go-playground/validator/v10 v10.24.0
-	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/cors v1.11.1
 	github.com/swaggo/http-swagger v1.3.4

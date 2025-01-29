@@ -58,7 +58,7 @@ func main() {
 func setUp() (chan error, []api.BaseServer, error) {
 	var cfg *config.Config = &config.Config{}
 
-	err := cfg.SetUp("../config/.env", enums.ENV, config.Flags.Mode == enums.DevelopmentMode)
+	err := cfg.SetUp("./config/.env", enums.ENV, config.Flags.Mode == enums.DevelopmentMode)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -76,6 +76,7 @@ func setUp() (chan error, []api.BaseServer, error) {
 	}
 
 	var s application.ServerConfigDataManager = serverdatamanager.NewBaseServerConfigDataManager(mineDb)
+
 	// Example of dynamically adding more servers (e.g., REST, GRPC)
 	var servers = []api.BaseServer{
 		rest.NewServer(ctx, cfg, l, s),
@@ -102,6 +103,5 @@ func setUp() (chan error, []api.BaseServer, error) {
 		wg.Wait()
 		close(errCh)
 	}()
-
 	return errCh, servers, nil
 }

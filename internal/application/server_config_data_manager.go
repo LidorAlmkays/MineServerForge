@@ -1,7 +1,11 @@
 package application
 
-import "github.com/LidorAlmkays/MineServerForge/dtos"
+import (
+	"context"
+
+	"github.com/LidorAlmkays/MineServerForge/dtos"
+)
 
 type ServerConfigDataManager interface {
-	CreateServer(dtos.CreateMinecraftServerDTO) (id int64, err error)
+	CreateServer(context.Context, dtos.CreateMinecraftServerDTO) (id int32, err error)
 }

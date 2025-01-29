@@ -1,0 +1,19 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "queries/minecraft_server_config/" # Path to the queries file (where you wrote your CRUD queries)
+    schema: "migrations/00001_minecraft_server_config.sql" # Path to your schema file (where you define the table)
+    gen:
+      go:
+        out: "../internal/model/db/minecraftserverconfig"
+        package: "minecraftserverconfig"
+        emit_json_tags: true
+#Example of adding 2 kind of tables.
+# - engine: "postgresql"
+#   queries: "db/queries/minecraft_server_config/queries2.sql" # Path to the queries file (where you wrote your CRUD queries)
+#   schema: "db/migrations/00002_minecraft_server_config.sql" # Path to your schema file (where you define the table)
+#   gen:
+#     go:
+#       out: "internal/infrastructure/db/queries/a"
+#       package: "a"
+#       emit_json_tags: true
