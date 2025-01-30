@@ -1,21 +1,23 @@
-package featuresdatamanager
+package filesystem
 
 import (
 	"errors"
 	"os"
 	"path/filepath"
+
+	"github.com/LidorAlmkays/MineServerForge/internal/infrastructure"
 )
 
-type fileBasedFeatureDataManager struct {
+type fileBasedFeatureDataStorage struct {
 }
 
-func NewFileBasedFeatureDataManager() FeaturesDataManager {
-	return &fileBasedFeatureDataManager{}
+func NewFileBasedFeatureDataStorage() infrastructure.FeaturesDataStorage {
+	return &fileBasedFeatureDataStorage{}
 }
 
 // SaveFile saves the data into a file in the specified directory.
 // It ensures the directory exists and handles file creation and writing.
-func (f *fileBasedFeatureDataManager) SaveFile(fileName string, data []byte, folderSaveDirectory string) error {
+func (f *fileBasedFeatureDataStorage) SaveFile(fileName string, data []byte, folderSaveDirectory string) error {
 	// Ensure the storage directory exists
 	if err := f.ensureDirectoryExists(folderSaveDirectory); err != nil {
 		return err
@@ -40,7 +42,7 @@ func (f *fileBasedFeatureDataManager) SaveFile(fileName string, data []byte, fol
 }
 
 // ensureDirectoryExists checks if a directory exists, and creates it if not.
-func (*fileBasedFeatureDataManager) ensureDirectoryExists(dir string) error {
+func (*fileBasedFeatureDataStorage) ensureDirectoryExists(dir string) error {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		// Directory doesn't exist; create it
 		if err := os.MkdirAll(dir, os.ModePerm); err != nil {

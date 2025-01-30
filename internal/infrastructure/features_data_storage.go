@@ -1,5 +1,5 @@
-package featuresdatamanager
+package infrastructure
 
-type FeaturesDataManager interface {
+type FeaturesDataStorage interface {
 	SaveFile(fileName string, data []byte, folderSaveDirectory string) error
 }

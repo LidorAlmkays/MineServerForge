@@ -29,3 +29,9 @@ storage
 pb
 
 dist
+volumes
+.volumes
+.vscode
+docs
+__debug_bin*
+model/

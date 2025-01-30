@@ -10,7 +10,7 @@ import (
 	"github.com/LidorAlmkays/MineServerForge/internal/api"
 	"github.com/LidorAlmkays/MineServerForge/internal/api/GRPC/pb"
 	"github.com/LidorAlmkays/MineServerForge/internal/api/GRPC/servers"
-	"github.com/LidorAlmkays/MineServerForge/internal/application/serverfeaturedatamanager"
+	"github.com/LidorAlmkays/MineServerForge/internal/application"
 	"github.com/LidorAlmkays/MineServerForge/pkg/logger"
 	"google.golang.org/grpc"
 )
@@ -21,10 +21,10 @@ type Server struct {
 	l          logger.Logger
 	grpcServer *grpc.Server
 	lis        net.Listener
-	sFeatures  serverfeaturedatamanager.ServerFeaturesDataManager
+	sFeatures  application.ServerFeaturesDataManager
 }
 
-func NewServer(ctx context.Context, cfg *config.Config, l logger.Logger, sFeatures serverfeaturedatamanager.ServerFeaturesDataManager) api.BaseServer {
+func NewServer(ctx context.Context, cfg *config.Config, l logger.Logger, sFeatures application.ServerFeaturesDataManager) api.BaseServer {
 	var opts []grpc.ServerOption = []grpc.ServerOption{}
 	grpcServer := grpc.NewServer(opts...)
 	return &Server{ctx: ctx, cfg: cfg, l: l, grpcServer: grpcServer, sFeatures: sFeatures}

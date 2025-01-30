@@ -7,17 +7,17 @@ import (
 	"log"
 
 	"github.com/LidorAlmkays/MineServerForge/internal/api/GRPC/pb"
-	"github.com/LidorAlmkays/MineServerForge/internal/application/serverfeaturedatamanager"
+	"github.com/LidorAlmkays/MineServerForge/internal/application"
 	"github.com/LidorAlmkays/MineServerForge/pkg/logger"
 )
 
 type featureDataServer struct {
 	l logger.Logger
-	s serverfeaturedatamanager.ServerFeaturesDataManager
+	s application.ServerFeaturesDataManager
 	pb.UnimplementedUploadFeatureDataServer
 }
 
-func NewFeatureDataServer(l logger.Logger, s serverfeaturedatamanager.ServerFeaturesDataManager) pb.UploadFeatureDataServer {
+func NewFeatureDataServer(l logger.Logger, s application.ServerFeaturesDataManager) pb.UploadFeatureDataServer {
 	return &featureDataServer{l: l, s: s}
 }
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/LidorAlmkays/MineServerForge/config"
 	"github.com/LidorAlmkays/MineServerForge/internal/api"
+	"github.com/LidorAlmkays/MineServerForge/internal/application"
 	"github.com/LidorAlmkays/MineServerForge/pkg/logger"
 )
 
@@ -17,21 +18,27 @@ type Server struct {
 	cfg        *config.Config
 	l          logger.Logger
 	httpServer *http.Server
+	s          application.ServerConfigDataManager
 }
 
-func NewServer(ctx context.Context, cfg *config.Config, l logger.Logger) api.BaseServer {
+func NewServer(ctx context.Context, cfg *config.Config, l logger.Logger, s application.ServerConfigDataManager) api.BaseServer {
 	mux := http.NewServeMux()
-	return &Server{ctx: ctx, mux: mux, cfg: cfg, l: l}
+	return &Server{ctx: ctx, mux: mux, cfg: cfg, l: l, s: s}
 }
 
 func (s *Server) ListenAndServe() error {
+
 	s.httpServer = &http.Server{
-		Addr:    ":" + strconv.Itoa(s.cfg.ServiceConfig.HttpPort),
-		Handler: s.addRoutes(),
+		Addr: ":" + strconv.Itoa(s.cfg.ServiceConfig.HttpPort),
 	}
+	handler, err := s.addRoutes()
+	if err != nil {
+		return err
+	}
+	s.httpServer.Handler = handler
 
 	s.l.Message("Server ready to receive REST requests, on port: " + strconv.Itoa(s.cfg.ServiceConfig.HttpPort))
-	err := s.httpServer.ListenAndServe()
+	err = s.httpServer.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed {
 		return errors.New("failed to serve rest server: " + err.Error())
 	}
